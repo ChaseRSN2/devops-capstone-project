@@ -126,9 +126,8 @@ class TestAccountService(TestCase):
     ##
     # read account
     ##
-
     def test_read_an_account(self):
-        """It should read an account with specified ID"""
+        """It should read an account"""
         account = self._create_accounts(1)[0]
 
         response = self.client.get(f"{BASE_URL}/{account.id}")
@@ -164,3 +163,33 @@ class TestAccountService(TestCase):
 
         response = self.client.put(f"{BASE_URL}/0", json=new_account)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    ##
+    # delete account
+    ##
+    def test_delete_an_account(self):
+        """It should delete the account"""
+        account = self._create_accounts(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{account.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    ##
+    # list accounts
+    ##
+    def test_list_account(self):
+        """It should list all accounts in the database"""
+        # first test case when there are no accounts
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response), 0)
+        # now create some accounts and test list
+        accounts = self._create_accounts(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response), 5)
+        self.assertEqual(type(response), list)
+        for account in response:
+            self.assertEqual(type(account), dict)
+
+
+

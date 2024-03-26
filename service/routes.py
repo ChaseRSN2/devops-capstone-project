@@ -60,8 +60,14 @@ def create_accounts():
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
-
-# ... place you code here to LIST accounts ...
+@app.route("/accounts", methods=["GET"])
+def list_accounts():
+    """List all accounts in the service"""
+    app.logger.info("Request to list all accounts")
+    accounts = Account.all()
+    account_list = [account.serialize() for account in accounts]
+    app.logger.info("Returning [%s] accounts", len(account_list))
+    return jsonify(account_list), status.HTTP_200_OK
 
 
 ######################################################################
@@ -83,7 +89,7 @@ def read_accounts(id):
 ######################################################################
 @app.route("/accounts/<id>", methods=["PUT"])
 def update_accounts(id):
-    """Update an account based on posted data the id that is requested"""
+    """Update an account based on posted data and the id that is requested"""
     app.logger.info("Request to update an Account with id: %s", id)
     account = Account.find(id)
     if account is None:
@@ -97,8 +103,14 @@ def update_accounts(id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-
-# ... place you code here to DELETE an account ...
+@app.route("/accounts/<id>", methods=["DELETE"])
+def delete_accounts(id):
+    """Delete an account based on the id that is requested"""
+    app.logger.info("Request to delete an Account with id: %s", id)
+    account = Account.find(id)
+    if account:
+        account.delete()
+    return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
