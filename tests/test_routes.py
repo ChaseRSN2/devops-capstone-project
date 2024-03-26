@@ -123,6 +123,10 @@ class TestAccountService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
+    ##
+    # read account
+    ##
+
     def test_read_an_account(self):
         """It should read an account with specified ID"""
         account = self._create_accounts(1)[0]
@@ -135,4 +139,28 @@ class TestAccountService(TestCase):
     def test_account_not_found(self):
         """It should abort with 404 status when account is not found"""
         response = self.client.get(f"{BASE_URL}/0")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    ##
+    # update account
+    ##
+    def test_update_an_account(self):
+        """It should update an account"""
+        account = self._create_accounts(1)[0]
+        account.name = "Chase Resonant"
+        new_account = account.serialize()
+
+        response = self.client.put(f"{BASE_URL}/{account.id}", json=new_account)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_account = response.get_json()
+        self.assertEqual(updated_account["name"], "Chase Resonant")
+
+    def test_update_account_not_found(self):
+        """It should abort with 404 status when account is not found"""
+        account = self._create_accounts(1)[0]
+        account.name = "Chase Resonant"
+        new_account = account.serialize()
+        self.assertNotEqual(account.id, 0)
+
+        response = self.client.put(f"{BASE_URL}/0", json=new_account)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
