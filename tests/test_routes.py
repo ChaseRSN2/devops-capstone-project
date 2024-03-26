@@ -181,15 +181,25 @@ class TestAccountService(TestCase):
         # first test case when there are no accounts
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response), 0)
-        # now create some accounts and test list
+        self.assertEqual(len(response.get_json()), 0)
+        # now create 5 accounts and test list
         accounts = self._create_accounts(5)
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response), 5)
-        self.assertEqual(type(response), list)
-        for account in response:
+        self.assertEqual(len(response.get_json()), 5)
+        # type testing
+        self.assertEqual(type(response.get_json()), list)
+        for account in response.get_json():
             self.assertEqual(type(account), dict)
 
+    ##
+    # error handlers
+    ##
+    def test_method_not_allowed(self):
+        """It should not allow an illegal method calls"""
+        resp = self.client.delete(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        resp = self.client.put(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
