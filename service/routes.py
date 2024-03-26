@@ -67,8 +67,15 @@ def create_accounts():
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
-# ... place you code here to READ an account ...
+@app.route("/accounts/<id>", methods=["GET"])
+def read_accounts(id):
+    """Read an account based on the id that is requested"""
+    app.logger.info("Request to read an Account with id: %s", id)
+    account = Account.find(id)
+    if account is None:
+        abort(status.HTTP_404_NOT_FOUND, "Account not found")
+    else:
+        return account.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
