@@ -186,7 +186,7 @@ class TestAccountService(TestCase):
         accounts = self._create_accounts(5)
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.get_json()), 5)
+        self.assertEqual(len(response.get_json()), len(accounts))
         # type testing
         self.assertEqual(type(response.get_json()), list)
         for account in response.get_json():
@@ -201,5 +201,3 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         resp = self.client.put(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
